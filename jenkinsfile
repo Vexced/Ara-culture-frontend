@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    environment {
+        NEXUS_URL = "http://nexus.example.com/repository/npm-releases/"
+        NEXUS_USER = credentials('nexus-user')
+        NEXUS_PASSWORD = credentials('nexus-pass')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps { git 'https://github.com/Vexced/Ara-culture-frontend' }
+        }
+
+        stage('Install & Build') {
+            steps {
+                sh 'npm ci'
+                sh 'npm run build'
+            }
+        }
+
+        stage('SonarQube & Snyk') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "sonar-scanner \
+                        -Dsonar.projectKey=ara-culture-frontend \
+                        -Dsonar.sources=src \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
+                        -Dsonar.login=$SONAR_TOKEN"
+                }
+                sh "snyk test --all-projects"
+            }
+        }
+
+        stage('Docker Build & Push') {
+            steps {
+                sh 'docker build -t ara-frontend:latest .'
+                sh """
+                docker tag ara-frontend:latest nexus.example.com/frontend/ara-frontend:latest
+                docker login -u $NEXUS_USER -p $NEXUS_PASSWORD nexus.example.com
+                docker push nexus.example.com/frontend/ara-frontend:latest
+                """
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Aquí puedes usar kubectl, docker-compose o scripts SCP para desplegar el frontend'
+            }
+        }
+    }
+
+    post {
+        success { echo 'Frontend desplegado correctamente' }
+        failure { echo 'Falló el deploy del frontend' }
+    }
+}

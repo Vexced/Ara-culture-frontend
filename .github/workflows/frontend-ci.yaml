@@ -39,6 +39,7 @@ jobs:
             -Dsonar.login=$SONAR_TOKEN
 
       - name: Snyk Scan
+      
         uses: snyk/actions@v2
         with:
           command: test
