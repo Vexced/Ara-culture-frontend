@@ -39,10 +39,9 @@ jobs:
             -Dsonar.login=$SONAR_TOKEN
 
       - name: Snyk Scan
-      
-        uses: snyk/actions@v2
+        uses: snyk/actions@0.4.0
         with:
           command: test
           args: --all-projects
-          env:
+        env:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
