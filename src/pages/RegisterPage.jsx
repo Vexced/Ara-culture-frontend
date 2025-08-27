@@ -12,7 +12,6 @@ export default function RegisterPage() {
   const onFinish = async (values) => {
     setLoading(true);
     try {
-      const { confirm, ...data } = values;
       await axios.post('http://localhost:8080/api/auth/register', values);
       message.success('Registro exitoso. Por favor inicia sesión.');
       navigate('/login');

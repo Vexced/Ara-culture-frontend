@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 // Crear contexto
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext();
 
 // Proveedor del contexto

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Row, Col, Image, Typography, Button, message, Space } from 'antd';
@@ -10,7 +11,7 @@ const { Title, Paragraph } = Typography;
 export default function ProductPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { token } = useContext(AuthContext);
+  useContext(AuthContext);
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);

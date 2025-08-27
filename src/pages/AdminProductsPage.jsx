@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState, useContext } from 'react';
 import {
   Table,
@@ -33,13 +34,13 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('/products', {
+      const res = await axios.get("/products", {
         headers: { Authorization: `Bearer ${token}` },
         params: { size: 1000 }, // traer todos, o adapta paginado
       });
       setProducts(res.data);
     } catch (error) {
-      message.error('Error cargando productos');
+      message.error("Error cargando productos");
     } finally {
       setLoading(false);
     }

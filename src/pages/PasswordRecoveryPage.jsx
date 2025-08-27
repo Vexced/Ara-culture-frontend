@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { Form, Input, Button, Typography, message } from 'antd';
 
@@ -6,7 +7,7 @@ const { Title } = Typography;
 export default function PasswordRecoveryPage() {
   const [loading, setLoading] = useState(false);
 
-  const onFinish = async (values) => {
+  const onFinish = async () => {
     setLoading(true);
 
     try {
