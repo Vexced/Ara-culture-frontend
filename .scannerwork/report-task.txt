@@ -1,0 +1,7 @@
+organization=vexced
+projectKey=Ara-culture-frontend
+serverUrl=https://sonarcloud.io
+serverVersion=8.0.0.66557
+dashboardUrl=https://sonarcloud.io/dashboard?id=Ara-culture-frontend
+ceTaskId=AZjp4_k3e-O4hCkfQpfp
+ceTaskUrl=https://sonarcloud.io/api/ce/task?id=AZjp4_k3e-O4hCkfQpfp
