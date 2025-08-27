@@ -10,7 +10,7 @@ env:
   SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-  IMAGE_NAME: ara_culture_frontend
+  IMAGE_NAME: vexced17/ara_culture_frontend
   IMAGE_TAG: ${{ github.sha }}
 jobs:
   build-test:
@@ -41,22 +41,33 @@ jobs:
         uses: sonarsource/sonarcloud-github-action@master
         with:
           args: >
-            -Dsonar.projectKey=ara-culture-frontend
-            -Dsonar.organization=tu-org
-            -Dsonar.host.url=$SONAR_HOST_URL
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.projectKey=Ara-culture-frontend
+            -Dsonar.organization=tu-vexced
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
-      - name: Snyk Scan
-        uses: snyk/actions@0.4.0
-        with:
-          command: test
-          args: --all-projects
-        env:
-            SNYK_TOKEN: SNYK_TOKEN  
-  docker:
-    needs: build-test
+  snyk-scan:
     runs-on: ubuntu-latest
-    if: needs.build-test.result == 'success'
+    needs: build-test
+
+    steps:      
+    
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Run Snyk Scan
+        run: snyk test --all-projects --fail-on=all
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  docker:
+    needs: [build-test, snyk-scan]
+    runs-on: ubuntu-latest
+    if: needs.snyk-scan.result == 'success'
 
     steps:
       - name: Checkout frontend
