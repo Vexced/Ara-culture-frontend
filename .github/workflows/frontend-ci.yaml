@@ -41,7 +41,7 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=Ara-culture-frontend
-            -Dsonar.organization=tu-vexced
+            -Dsonar.organization=vexced
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
