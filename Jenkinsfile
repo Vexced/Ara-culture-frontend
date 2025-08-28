@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:20-bullseye'
+            args '-u node' 
+        }
+    }
 
     environment {
         NEXUS_URL = "https://nexus.example.com/repository/npm-group/"
