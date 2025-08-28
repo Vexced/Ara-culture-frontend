@@ -16,8 +16,6 @@ pipeline {
 
         stage('Install & Build') {
             steps {
-                 sh 'curl -fsSL https://deb.nodesource.com/setup_20.x | bash -'
-                sh 'apt-get install -y nodejs'
                 sh 'node -v'
                 sh 'npm -v'
                 sh 'npm ci'
