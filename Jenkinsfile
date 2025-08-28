@@ -77,9 +77,9 @@ pipeline {
                 ]) {
                     sh '''
                         docker build -t ara-frontend:latest .
-                        docker tag ara-frontend:latest localhost:8082/repository/docker-frontend/ara-frontend:latest
+                        docker tag ara-frontend:latest localhost:8082/ara-frontend:latest
                         docker login -u $NEXUS_USER -p $NEXUS_PASSWORD localhost:8082
-                        docker push localhost:8082/repository/docker-frontend/ara-frontend:latest
+                        docker push localhost:8082/ara-frontend:latest
                     '''
                 }
             }
@@ -100,9 +100,9 @@ pipeline {
                     sh """
                     ssh ${REMOTE} '
                       set -e
-                      docker stop ara-frondend || true
+                      ddocker stop ara-frontend || true
                       docker rm ara-frontend || true
-                      docker run -d --name ara-frontend -p 8081:8080 ${IMAGE_TAG}
+                      docker run -d --name ara-frontend -p 8081:80 ${IMAGE_TAG}
                     '
                     """
                 }
