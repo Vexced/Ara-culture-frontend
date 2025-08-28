@@ -81,7 +81,7 @@ pipeline {
                     
                     curl -u $NEXUS_USER:$NEXUS_PASSWORD \
                             --upload-file ara-frontend.zip \
-                            https://nexus.example.com/repository/raw-frontend/ara-frontend.zip
+                            https://nexus.example.com/repository//npm-group/ara-frontend.zip
                 '''
             }
         }
