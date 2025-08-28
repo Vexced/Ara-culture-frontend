@@ -31,21 +31,23 @@ pipeline {
 
 
         
-
         stage('SonarQube Analysis') {
-                    steps {
-                        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-                            sh """
-                            npm install -g sonar-scanner
-                            sonar-scanner \
+            steps {
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    sh '''
+                        # Instala sonar-scanner localmente en node_modules del proyecto
+                        npm install sonar-scanner --no-save
+
+                        # Ejecuta sonar-scanner usando npx
+                        npx sonar-scanner \
                             -Dsonar.projectKey=ara-culture-frontend \
                             -Dsonar.organization=vexced \
                             -Dsonar.host.url=${SONAR_HOST} \
-                            -Dsonar.login=${SONAR_TOKEN}
-                            """
-                        }
-                    }
+                            -Dsonar.login=$SONAR_TOKEN
+                    '''
                 }
+            }
+        }
 
         stage('Snyk Scan') {
             steps {
