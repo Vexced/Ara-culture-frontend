@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
- NEXUS_URL = "https://nexus.example.com/repository/maven-releases/"
+        NEXUS_URL = "https://nexus.example.com/repository/npm-group/"
         SONAR_HOST = "https://sonarcloud.io"
         IMAGE_NAME = "ara-culture-frontend"
         REMOTE_USER = "vexced"
@@ -27,7 +27,7 @@ pipeline {
                     steps {
                         withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                             sh """
-                            mvn sonar:sonar \
+                            sonar-scanner \
                             -Dsonar.projectKey=ara-culture-frontend \
                             -Dsonar.organization=vexced \
                             -Dsonar.host.url=${SONAR_HOST} \
