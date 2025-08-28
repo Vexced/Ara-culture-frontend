@@ -2,14 +2,16 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = "http://nexus.example.com/repository/npm-releases/"
-        NEXUS_USER = credentials('nexus-user')
-        NEXUS_PASSWORD = credentials('nexus-pass')
+ NEXUS_URL = "https://nexus.example.com/repository/maven-releases/"
+        SONAR_HOST = "https://sonarcloud.io"
+        IMAGE_NAME = "ara-culture-frontend"
+        REMOTE_USER = "vexced"
+        REMOTE_HOST = "192.168.100.252"
     }
 
     stages {
         stage('Checkout') {
-            steps { git 'https://github.com/Vexced/Ara-culture-frontend' }
+            steps { git branch: 'main', url: 'https://github.com/Vexced/Ara-culture-frontend' }
         }
 
         stage('Install & Build') {
@@ -19,27 +21,79 @@ pipeline {
             }
         }
 
-        stage('SonarQube & Snyk') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh "sonar-scanner \
-                        -Dsonar.projectKey=ara-culture-frontend \
-                        -Dsonar.sources=src \
-                        -Dsonar.host.url=$SONAR_HOST_URL \
-                        -Dsonar.login=$SONAR_TOKEN"
+        
+
+        stage('SonarQube Analysis') {
+                    steps {
+                        withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                            sh """
+                            mvn sonar:sonar \
+                            -Dsonar.projectKey=ara-culture-frontend \
+                            -Dsonar.organization=vexced \
+                            -Dsonar.host.url=${SONAR_HOST} \
+                            -Dsonar.login=${SONAR_TOKEN}
+                            """
+                        }
+                    }
                 }
-                sh "snyk test --all-projects"
+
+        stage('Snyk Scan') {
+            steps {
+                withCredentials([string(credentialsId: 'snyk-token', variable: 'SNYK_TOKEN')]) {
+                    withEnv(["SNYK_TOKEN=${SNYK_TOKEN}"]) {
+                        sh '''
+                            # Instala snyk localmente en el workspace si no existe
+                            if [ ! -d "node_modules/snyk" ]; then
+                                npm install snyk
+                            fi
+
+                            # Ejecuta el scan usando npx
+                            npx snyk auth $SNYK_TOKEN
+                            npx snyk test
+                        '''
+                    }
+                }
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Deploy to Nexus (Docker)') {
             steps {
-                sh 'docker build -t ara-frontend:latest .'
-                sh """
-                docker tag ara-frontend:latest nexus.example.com/frontend/ara-frontend:latest
-                docker login -u $NEXUS_USER -p $NEXUS_PASSWORD nexus.example.com
-                docker push nexus.example.com/frontend/ara-frontend:latest
-                """
+                withCredentials([
+                    usernamePassword(credentialsId: 'nexus-credentials',
+                                    usernameVariable: 'NEXUS_USER',
+                                    passwordVariable: 'NEXUS_PASSWORD')
+                ]) {
+                    sh '''
+                        docker build -t ara-frontend:latest .
+                        docker tag ara-frontend:latest localhost:8082/repository/docker-frontend/ara-frontend:latest
+                        docker login -u $NEXUS_USER -p $NEXUS_PASSWORD localhost:8082
+                        docker push localhost:8082/repository/docker-frontend/ara-frontend:latest
+                    '''
+                }
+            }
+        }
+
+
+
+
+        stage('Deploy to Server via Docker') {
+             steps {
+                script {
+                    def REMOTE = "${REMOTE_USER}@${REMOTE_HOST}"
+                    def IMAGE_TAG = "${IMAGE_NAME}:latest"
+
+                    sh "docker build -t ${IMAGE_TAG} ."
+                    sh "docker save ${IMAGE_TAG} | bzip2 | ssh ${REMOTE} 'bunzip2 | docker load'"
+
+                    sh """
+                    ssh ${REMOTE} '
+                      set -e
+                      docker stop ara-frondend || true
+                      docker rm ara-frontend || true
+                      docker run -d --name ara-frontend -p 8081:8080 ${IMAGE_TAG}
+                    '
+                    """
+                }
             }
         }
 
