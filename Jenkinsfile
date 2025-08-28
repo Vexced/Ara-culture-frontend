@@ -14,14 +14,21 @@ pipeline {
             steps { git branch: 'main', url: 'https://github.com/Vexced/Ara-culture-frontend' }
         }
 
-        stage('Install & Build') {
-            steps {
-                sh 'node -v'
-                sh 'npm -v'
-                sh 'npm ci'
-                sh 'npm run build'
-            }
-        }
+       stage('Install & Build') {
+    steps {
+        sh '''
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 20
+
+            node -v
+            npm -v
+            npm ci
+            npm run build
+        '''
+    }
+}
+
 
         
 
