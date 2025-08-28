@@ -68,21 +68,18 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nexus (Docker)') {
-            steps {
-                withCredentials([
-                    usernamePassword(credentialsId: 'nexus-credentials',
-                                    usernameVariable: 'NEXUS_USER',
-                                    passwordVariable: 'NEXUS_PASSWORD')
-                ]) {
-                    sh '''
-                        docker build -t ara-frontend:latest .
-                        docker tag ara-frontend:latest localhost:8082/ara-frontend:latest
-                        docker login -u $NEXUS_USER -p $NEXUS_PASSWORD localhost:8082
-                        docker push localhost:8082/ara-frontend:latest
-                    '''
-                }
+        stage('Deploy to Nexus') {
+        steps {
+            withCredentials([usernamePassword(credentialsId: 'nexus-credentials',
+                                                usernameVariable: 'NEXUS_USER',
+                                                passwordVariable: 'NEXUS_PASSWORD')]) {
+                sh '''
+                    curl -u $NEXUS_USER:$NEXUS_PASSWORD \
+                            --upload-file ara-frontend.zip \
+                            https://nexus.example.com/repository/raw-frontend/ara-frontend.zip
+                '''
             }
+        }
         }
 
 
@@ -100,7 +97,7 @@ pipeline {
                     sh """
                     ssh ${REMOTE} '
                       set -e
-                      ddocker stop ara-frontend || true
+                      ddocker stop ara-frontend || true 
                       docker rm ara-frontend || true
                       docker run -d --name ara-frontend -p 8081:80 ${IMAGE_TAG}
                     '
