@@ -25,6 +25,7 @@ pipeline {
             npm -v
             npm ci
             npm run build
+            apt-get update && apt-get install -y zip
             zip -r ara-frontend.zip dist
         '''
     }
