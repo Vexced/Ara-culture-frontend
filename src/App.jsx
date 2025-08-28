@@ -13,6 +13,7 @@ import { AuthProvider } from './context/AuthContext';
 import MainLayout from './components/MainLayout';
 import AdminProductsPage from './pages/AdminProductsPage';
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
               <MainLayout>
                 <Routes>
                   <Route path="//products" element={<AdminProductsPage />} />
+                  <Route path="/checkout" element={<CheckoutPage />} /> 
                   <Route path="/product/:productId" element={<ProductPage />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/profile" element={<ProfilePage />} />

@@ -16,6 +16,10 @@ pipeline {
 
         stage('Install & Build') {
             steps {
+                 sh 'curl -fsSL https://deb.nodesource.com/setup_20.x | bash -'
+                sh 'apt-get install -y nodejs'
+                sh 'node -v'
+                sh 'npm -v'
                 sh 'npm ci'
                 sh 'npm run build'
             }
@@ -27,6 +31,7 @@ pipeline {
                     steps {
                         withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                             sh """
+                            npm install -g sonar-scanner
                             sonar-scanner \
                             -Dsonar.projectKey=ara-culture-frontend \
                             -Dsonar.organization=vexced \
