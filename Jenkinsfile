@@ -25,6 +25,7 @@ pipeline {
             npm -v
             npm ci
             npm run build
+            zip -r ara-frontend.zip dist
         '''
     }
 }
@@ -74,6 +75,9 @@ pipeline {
                                                 usernameVariable: 'NEXUS_USER',
                                                 passwordVariable: 'NEXUS_PASSWORD')]) {
                 sh '''
+                     # Asegurarse de que el ZIP existe
+                    ls -l ara-frontend.zip
+                    
                     curl -u $NEXUS_USER:$NEXUS_PASSWORD \
                             --upload-file ara-frontend.zip \
                             https://nexus.example.com/repository/raw-frontend/ara-frontend.zip
