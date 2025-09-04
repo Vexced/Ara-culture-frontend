@@ -16,9 +16,13 @@ spec:
     spec:
       containers:
         - name: ara-frontend
-          image: tuusuario/ara-frontend:latest
+          image: vexced17/ara_culture_frontend:latest
           ports:
             - containerPort: 80
+          env:
+            # URL interna del backend
+            - name: REACT_APP_API_URL
+              value: http://ara-backend:8080
           readinessProbe:
             httpGet:
               path: /

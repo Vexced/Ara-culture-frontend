@@ -6,7 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: araculture.example.com  # Cambia por tu dominio o IP
+    - host: araculture.example.com   # Resuelto en /etc/hosts → 192.168.58.2
       http:
         paths:
           - path: /
