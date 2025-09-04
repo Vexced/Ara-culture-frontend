@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: ara-frontend
-          image: vexced17/ara_culture_frontend:latest
+          image: vexced17/ara_culture_frontend:3a3b95ee99602b57624406506e03d57333f46891
           ports:
             - containerPort: 80
           env:
